@@ -1,6 +1,10 @@
 fn main() {
-    let server = Server::new("127.0.0.1:8080".to_string());
-    server.run();
+    let string = String::from("127.0.0.1:8080");
+    let string_slice = &string[10..]; // example of creating a slice of the string
+    println!("{}", string_slice);
+
+    // let server = Server::new("127.0.0.1:8080".to_string());
+    // server.run();
 }
 
 struct Server {
