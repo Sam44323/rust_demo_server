@@ -1,4 +1,5 @@
 use http::method::Method;
+use http::request::Request;
 use server::Server;
 
 mod http; // so that we can use the http module(as it's a folder so we created a mod.rs file for declaring the interfaces)
