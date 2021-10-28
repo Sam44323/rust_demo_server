@@ -1,5 +1,7 @@
+use server::Server;
+
 fn main() {
-    let server = server::Server::new("127.0.0.1:8080".to_string());
+    let server = Server::new("127.0.0.1:8080".to_string());
     server.run();
 }
 
@@ -28,7 +30,7 @@ mod http {
             method: super::method::Method,
         }
     }
-    mod method {
+    pub mod method {
         pub enum Method {
             GET,
             POST,
