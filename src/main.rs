@@ -1,3 +1,4 @@
+use http::request::Request;
 use server::Server;
 
 fn main() {
@@ -23,11 +24,12 @@ mod server {
 }
 
 mod http {
-    mod request {
+    pub mod request {
+        use super::method::Method;
         pub struct Request {
             path: String,
             query_string: Option<String>,
-            method: super::method::Method,
+            method: Method,
         }
     }
     pub mod method {
