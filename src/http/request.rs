@@ -1,4 +1,4 @@
-use super::method::Method;
+use super::method::Method; // using the super as request belongs to the same folder as requests
 
 pub struct Request {
   path: String,
