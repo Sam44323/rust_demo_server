@@ -15,7 +15,13 @@ impl Server {
 
     // rust has a special infinite loops
     loop {
-      listener.accept().unwrap();
+      let result = listener.accept();
+
+      if result.is_err() {
+        continue;
+      }
+
+      let stream = result.unwrap(); // extracting the stream from the result if not error
     }
   }
 }
