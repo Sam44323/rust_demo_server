@@ -13,7 +13,7 @@ impl Server {
     println!("Listening on {}", self.addr);
     let listener = TcpListener::bind(&self.addr).unwrap();
 
-    // rust has an explicit loop for inifinity
+    // rust has a special inifinite loops
     loop {
       listener.accept().unwrap();
     }
