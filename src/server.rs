@@ -1,6 +1,6 @@
 use crate::http::Request;
 use std::io::Read;
-use std::net::TcpListener; // accessing the main file for modules
+use std::net::TcpListener; // accessing the root of the entire crate(i.e. main for our case) file for modules
 
 pub struct Server {
   addr: String,
