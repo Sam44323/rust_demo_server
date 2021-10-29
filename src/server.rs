@@ -16,7 +16,7 @@ impl Server {
     // rust has a special infinite loops
     loop {
       match listener.accept() {
-        Ok((_socket, _addr)) => {
+        Ok((_socket, _)) => {
           println!("New connection");
         }
         Err(e) => {
