@@ -15,7 +15,7 @@ impl Server {
 
     // rust has an explicit loop for inifinity
     loop {
-      listener.accept();
+      listener.accept().unwrap();
     }
   }
 }
