@@ -1,3 +1,4 @@
+use std::io::Read;
 use std::net::TcpListener;
 
 pub struct Server {
@@ -16,8 +17,9 @@ impl Server {
     // rust has a special infinite loop
     loop {
       match listener.accept() {
-        Ok((stream, _)) => {
-          println!("New connection");
+        Ok((mut stream, _)) => {
+          let mut buffer = [0; 1024];
+          stream.read(&mut buffer);
         }
         Err(e) => {
           println!("Failed to establish a connection: {}", e);
