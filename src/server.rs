@@ -21,7 +21,7 @@ impl Server {
         continue;
       }
 
-      let stream = result.unwrap(); // extracting the stream from the result if not error
+      let (stream, address) = result.unwrap(); // extracting the stream from the result tuple if not error
     }
   }
 }
