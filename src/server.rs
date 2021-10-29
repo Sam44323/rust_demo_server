@@ -20,7 +20,7 @@ impl Server {
           println!("New connection");
         }
         Err(e) => {
-          println!("Error: {}", e);
+          println!("Failed to establish a connection: {}", e);
         }
       }
 
