@@ -12,5 +12,10 @@ impl Server {
   pub fn run(self) {
     println!("Listening on {}", self.addr);
     let listener = TcpListener::bind(&self.addr).unwrap();
+
+    // rust has an explicit loop for inifinity
+    loop {
+      listener.accept();
+    }
   }
 }
