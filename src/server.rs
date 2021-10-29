@@ -19,7 +19,7 @@ impl Server {
       match listener.accept() {
         Ok((mut stream, _)) => {
           let mut buffer = [0; 1024];
-          stream.read(&mut buffer);
+          stream.read(&mut buffer); // taking the input streams and storing it in your buffer(just for our test)
         }
         Err(e) => {
           println!("Failed to establish a connection: {}", e);
