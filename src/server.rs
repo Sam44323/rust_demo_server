@@ -26,7 +26,7 @@ impl Server {
             Err(e) => {
               println!("Failed to read from the connection: {}", e);
             }
-          } // taking the input streams and storing it in your buffer(just for our test)
+          } // taking the input streams and storing it in our buffer(just for our test)
         }
         Err(e) => {
           println!("Failed to establish a connection: {}", e);
