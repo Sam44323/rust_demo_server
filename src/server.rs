@@ -15,13 +15,22 @@ impl Server {
 
     // rust has a special infinite loops
     loop {
-      let result = listener.accept();
-
-      if result.is_err() {
-        continue;
+      match listener.accept() {
+        Ok((_socket, _addr)) => {
+          println!("New connection");
+        }
+        Err(e) => {
+          println!("Error: {}", e);
+        }
       }
 
-      let (stream, address) = result.unwrap(); // extracting the stream from the result tuple if not error
+      // let result = listener.accept();
+
+      // if result.is_err() {
+      //   continue;
+      // }
+
+      // let (stream, address) = result.unwrap(); // extracting the stream from the result tuple if not error
     }
   }
 }
