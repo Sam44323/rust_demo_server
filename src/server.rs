@@ -1,5 +1,5 @@
 use crate::http::Request;
-use std::convert::{TryFrom, TryInto}; // to use a trait we always have to pull it (even if we are using the function from one of our crates)
+use std::convert::TryFrom; // to use a trait we always have to pull it (even if we are using the function from one of our crates)
 use std::io::Read;
 use std::net::TcpListener; // accessing the root of the entire crate(i.e. main for our case) file for modules
 
