@@ -23,14 +23,6 @@ impl Server {
           println!("Failed to establish a connection: {}", e);
         }
       }
-
-      // let result = listener.accept();
-
-      // if result.is_err() {
-      //   continue;
-      // }
-
-      // let (stream, address) = result.unwrap(); // extracting the stream from the result tuple if not error
     }
   }
 }
