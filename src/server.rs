@@ -22,6 +22,8 @@ impl Server {
         Err(e) => {
           println!("Failed to establish a connection: {}", e);
         }
+
+        _ => println!("Others!"),
       }
 
       // let result = listener.accept();
