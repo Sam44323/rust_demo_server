@@ -1,4 +1,5 @@
 use crate::http::Request;
+use std::convert::{TryFrom, TryInto}; // to use a trait we always have to pull it (even if we are using the function from one of our crates)
 use std::io::Read;
 use std::net::TcpListener; // accessing the root of the entire crate(i.e. main for our case) file for modules
 
@@ -23,6 +24,12 @@ impl Server {
           match stream.read(&mut buffer) {
             Ok(_) => {
               println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+
+              // adding a try_from implementation to our buffer
+              match Request::try_from(&buffer as &[u8]) {
+                Ok(request) => println!("Request parsed successfully"),
+                Err(e) => println!("Request could not be parsed: {}", e),
+              }
             }
             Err(e) => {
               println!("Failed to read from the connection: {}", e);
