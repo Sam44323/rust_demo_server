@@ -4,4 +4,5 @@ pub mod request;
 
 // example of exposing the module specifics from the file
 pub use method::Method;
+pub use request::ParseError;
 pub use request::Request;

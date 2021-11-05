@@ -14,7 +14,7 @@ pub struct Request {
  */
 
 impl TryFrom<&[u8]> for Request {
-  type Error = String; // adding a concrete type to the Error type alias
+  type Error = ParseError; // adding a concrete type to the Error type alias
 
   fn try_from(buff: &[u8]) -> Result<Self, Self::Error> {
     unimplemented!(); // using the unimplemented! macro to indicate that this function is not implemented
