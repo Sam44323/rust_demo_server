@@ -1,24 +1,14 @@
 use super::method::Method; // using the super as request belongs to the same folder as requests
 use std::convert::TryFrom;
 use std::error::Error;
-use std::fmt::{Debug, Display, Formatter, Result as FmtResult}; // using a special Result type used for Display Trait
+use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
+use std::str; // using a special Result type used for Display Trait
+use std::str::Utf8Error;
 
 pub struct Request {
   path: String,
   query_string: Option<String>,
   method: Method,
-}
-
-/**
- * example of implementing a trait for struct. As here we'll be converting a byte slice to the Request type, so we passed the u8 generic value to the TryFrom trait
- */
-
-impl TryFrom<&[u8]> for Request {
-  type Error = ParseError; // adding a concrete type to the Error type alias
-
-  fn try_from(buff: &[u8]) -> Result<Self, Self::Error> {
-    unimplemented!(); // using the unimplemented! macro to indicate that this function is not implemented
-  }
 }
 
 pub enum ParseError {
@@ -59,5 +49,27 @@ impl Debug for ParseError {
   }
 }
 
+impl From<Utf8Error> for ParseError {
+  fn from(_: Utf8Error) -> Self {
+    return Self::InvalidEncoding;
+  }
+}
+
 // Adding custom Error implementation for the ParseError enum
 impl Error for ParseError {}
+
+/**
+ * example of implementing a trait for struct. As here we'll be converting a byte slice to the Request type, so we passed the u8 generic value to the TryFrom trait
+ */
+
+impl TryFrom<&[u8]> for Request {
+  type Error = ParseError; // adding a concrete type to the Error type alias
+
+  fn try_from(buff: &[u8]) -> Result<Self, Self::Error> {
+    /**
+     * This line of code checks the transformation for utf-8 encoding to string. If it can, then it return the string, else it returns the error(here it tries to match the error as defined in the generics, for example, for this case it's ParseError)
+     */
+    let request = str::from_utf8(buff)?; // converting the byte slice to a string
+    unimplemented!()
+  }
+}
