@@ -18,3 +18,10 @@ impl TryFrom<&[u8]> for Request {
     unimplemented!(); // using the unimplemented! macro to indicate that this function is not implemented
   }
 }
+
+pub enum ParseError {
+  InvalidRequest,
+  InvalidEncoding, // when the encoding is not utf-8
+  InvalidProtocol, // if the HTTP protocol is not 1.1
+  InvalidMethod,   // if the method is not a valid HTTP method
+}
