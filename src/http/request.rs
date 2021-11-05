@@ -1,21 +1,78 @@
-use super::method::Method; // using the super as request belongs to the same folder as requests
+use super::method::{Method, MethodError};
+use super::QueryString;
 use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
-use std::str; // using a special Result type used for Display Trait
+use std::str;
 use std::str::Utf8Error;
 
-pub struct Request {
-  path: String,
-  query_string: Option<String>,
+#[derive(Debug)]
+pub struct Request<'buf> {
+  path: &'buf str,
+  query_string: Option<QueryString<'buf>>,
   method: Method,
+}
+
+impl<'buf> Request<'buf> {
+  pub fn path(&self) -> &str {
+    &self.path
+  }
+
+  pub fn method(&self) -> &Method {
+    &self.method
+  }
+
+  pub fn query_string(&self) -> Option<&QueryString> {
+    self.query_string.as_ref()
+  }
+}
+
+impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
+  type Error = ParseError;
+
+  // GET /search?name=abc&sort=1 HTTP/1.1\r\n...HEADERS...
+  fn try_from(buf: &'buf [u8]) -> Result<Request<'buf>, Self::Error> {
+    let request = str::from_utf8(buf)?;
+
+    let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+    let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+    let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+
+    if protocol != "HTTP/1.1" {
+      return Err(ParseError::InvalidProtocol);
+    }
+
+    let method: Method = method.parse()?;
+
+    let mut query_string = None;
+    if let Some(i) = path.find('?') {
+      query_string = Some(QueryString::from(&path[i + 1..]));
+      path = &path[..i];
+    }
+
+    Ok(Self {
+      path,
+      query_string,
+      method,
+    })
+  }
+}
+
+fn get_next_word(request: &str) -> Option<(&str, &str)> {
+  for (i, c) in request.chars().enumerate() {
+    if c == ' ' || c == '\r' {
+      return Some((&request[..i], &request[i + 1..]));
+    }
+  }
+
+  None
 }
 
 pub enum ParseError {
   InvalidRequest,
-  InvalidEncoding, // when the encoding is not utf-8
-  InvalidProtocol, // if the HTTP protocol is not 1.1
-  InvalidMethod,   // if the method is not a valid HTTP method
+  InvalidEncoding,
+  InvalidProtocol,
+  InvalidMethod,
 }
 
 impl ParseError {
@@ -29,70 +86,28 @@ impl ParseError {
   }
 }
 
-/**
- * we are implementing Debug and Display traits for our ParseError type so
- * that we can print the error message in a nice way and make the Error trait work
- */
-
-// implementing the Display trait for the ParseError enum
-impl Display for ParseError {
-  fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-    // writing the string representation of the enum(message) to the formatter
-    write!(f, "{}", self.message())
-  }
-}
-
-// implementing the Debug trait for the ParseError enum
-impl Debug for ParseError {
-  fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-    write!(f, "{}", self.message())
+impl From<MethodError> for ParseError {
+  fn from(_: MethodError) -> Self {
+    Self::InvalidMethod
   }
 }
 
 impl From<Utf8Error> for ParseError {
   fn from(_: Utf8Error) -> Self {
-    return Self::InvalidEncoding;
+    Self::InvalidEncoding
   }
 }
 
-// Adding custom Error implementation for the ParseError enum
+impl Display for ParseError {
+  fn fmt(&self, f: &mut Formatter) -> FmtResult {
+    write!(f, "{}", self.message())
+  }
+}
+
+impl Debug for ParseError {
+  fn fmt(&self, f: &mut Formatter) -> FmtResult {
+    write!(f, "{}", self.message())
+  }
+}
+
 impl Error for ParseError {}
-
-/**
- * example of implementing a trait for struct. As here we'll be converting a byte slice to the Request type, so we passed the u8 generic value to the TryFrom trait
- */
-
-impl TryFrom<&[u8]> for Request {
-  type Error = ParseError; // adding a concrete type to the Error type alias
-
-  fn try_from(buff: &[u8]) -> Result<Self, Self::Error> {
-    /**
-     * This line of code checks the transformation for utf-8 encoding to string. If it can, then it return the string, else it returns the error(here it tries to match the error as defined in the generics, for example, for this case it's ParseError)
-     */
-    let request = str::from_utf8(buff)?; // converting the byte slice to a string
-
-    // if it return any value, then it will return it else it will throw the specified error
-
-    let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-    let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-    let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-
-    if protocol != "HTTP/1.1" {
-      return Err(ParseError::InvalidProtocol);
-    }
-
-    unimplemented!()
-  }
-}
-
-// We are using Option because if the query string is empty, we return None
-// here we return the word and the rest string slice
-fn get_next_word(request: &str) -> Option<(&str, &str)> {
-  let mut iter = request.chars();
-  for (index, value) in iter.enumerate() {
-    if value == ' ' || value == '\r' {
-      return Some((&request[..index], &request[index + 1..]));
-    }
-  }
-  None // returning None if the string is exhausted or empty
-}

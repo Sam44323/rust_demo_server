@@ -1,7 +1,16 @@
-use crate::http::Request; // using crate keyword to go to the root of the project i.e. src
-use std::convert::TryFrom; // to use a trait we always have to pull it (even if we are using the function from one of our crates)
+use crate::http::{ParseError, Request, Response, StatusCode};
+use std::convert::TryFrom;
 use std::io::Read;
-use std::net::TcpListener; // accessing the root of the entire crate(i.e. main for our case) file for modules
+use std::net::TcpListener;
+
+pub trait Handler {
+  fn handle_request(&mut self, request: &Request) -> Response;
+
+  fn handle_bad_request(&mut self, e: &ParseError) -> Response {
+    println!("Failed to parse request: {}", e);
+    Response::new(StatusCode::BadRequest, None)
+  }
+}
 
 pub struct Server {
   addr: String,
@@ -9,14 +18,14 @@ pub struct Server {
 
 impl Server {
   pub fn new(addr: String) -> Self {
-    Server { addr }
+    Self { addr }
   }
 
-  pub fn run(self) {
+  pub fn run(self, mut handler: impl Handler) {
     println!("Listening on {}", self.addr);
+
     let listener = TcpListener::bind(&self.addr).unwrap();
 
-    // rust has a special infinite loop
     loop {
       match listener.accept() {
         Ok((mut stream, _)) => {
@@ -25,20 +34,19 @@ impl Server {
             Ok(_) => {
               println!("Received a request: {}", String::from_utf8_lossy(&buffer));
 
-              // trying to convert buffer to the request type
-              match Request::try_from(&buffer as &[u8]) {
-                Ok(_) => println!("Request parsed successfully"),
-                Err(e) => println!("Request could not be parsed: {}", e),
+              let response = match Request::try_from(&buffer[..]) {
+                Ok(request) => handler.handle_request(&request),
+                Err(e) => handler.handle_bad_request(&e),
+              };
+
+              if let Err(e) = response.send(&mut stream) {
+                println!("Failed to send response: {}", e);
               }
             }
-            Err(e) => {
-              println!("Failed to read from the connection: {}", e);
-            }
-          } // taking the input streams and storing it in our buffer(just for our test)
+            Err(e) => println!("Failed to read from connection: {}", e),
+          }
         }
-        Err(e) => {
-          println!("Failed to establish a connection: {}", e);
-        }
+        Err(e) => println!("Failed to establish a connection: {}", e),
       }
     }
   }

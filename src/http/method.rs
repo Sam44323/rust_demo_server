@@ -1,11 +1,11 @@
-use super::request::ParseError;
 use std::str::FromStr;
 
+#[derive(Debug)]
 pub enum Method {
   GET,
+  DELETE,
   POST,
   PUT,
-  DELETE,
   HEAD,
   CONNECT,
   OPTIONS,
@@ -14,20 +14,22 @@ pub enum Method {
 }
 
 impl FromStr for Method {
-  type Err = ParseError;
+  type Err = MethodError;
 
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
-      "GET" => Ok(Method::GET),
-      "POST" => Ok(Method::POST),
-      "PUT" => Ok(Method::PUT),
-      "DELETE" => Ok(Method::DELETE),
-      "HEAD" => Ok(Method::HEAD),
-      "CONNECT" => Ok(Method::CONNECT),
-      "OPTIONS" => Ok(Method::OPTIONS),
-      "TRACE" => Ok(Method::TRACE),
-      "PATCH" => Ok(Method::PATCH),
-      _ => Err(ParseError::InvalidMethod),
+      "GET" => Ok(Self::GET),
+      "DELETE" => Ok(Self::DELETE),
+      "POST" => Ok(Self::POST),
+      "PUT" => Ok(Self::PUT),
+      "HEAD" => Ok(Self::HEAD),
+      "CONNECT" => Ok(Self::CONNECT),
+      "OPTIONS" => Ok(Self::OPTIONS),
+      "TRACE" => Ok(Self::TRACE),
+      "PATCH" => Ok(Self::PATCH),
+      _ => Err(MethodError),
     }
   }
 }
+
+pub struct MethodError;
