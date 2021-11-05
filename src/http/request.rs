@@ -71,10 +71,9 @@ impl TryFrom<&[u8]> for Request {
      */
     let request = str::from_utf8(buff)?; // converting the byte slice to a string
 
-    match get_next_word(request) {
-      Some((method, request)) => {}
-      None => return Err(ParseError::InvalidRequest),
-    }
+    // if it return any value, then it will return it else it will throw the specified error
+
+    let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
 
     unimplemented!()
   }
