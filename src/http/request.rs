@@ -7,7 +7,7 @@ pub struct Request {
   method: Method,
 }
 
-// example of implementing a trait for a struct. As here we'll be sending a byte value, so we passed the u8 generic value to the TryFrom trait
+// example of implementing a trait for struct. As here we'll be sending a byte value, so we passed the u8 generic value to the TryFrom trait
 impl TryFrom<&[u8]> for Request {
   type Error = String; // adding a concrete type to the Error type alias
 
