@@ -74,6 +74,7 @@ impl TryFrom<&[u8]> for Request {
     // if it return any value, then it will return it else it will throw the specified error
 
     let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+    let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
 
     unimplemented!()
   }
@@ -84,7 +85,7 @@ impl TryFrom<&[u8]> for Request {
 fn get_next_word(request: &str) -> Option<(&str, &str)> {
   let mut iter = request.chars();
   for (index, value) in iter.enumerate() {
-    if value == ' ' {
+    if value == ' ' || value == '\r' {
       return Some((&request[..index], &request[index + 1..]));
     }
   }
