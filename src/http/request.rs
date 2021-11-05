@@ -70,6 +70,12 @@ impl TryFrom<&[u8]> for Request {
      * This line of code checks the transformation for utf-8 encoding to string. If it can, then it return the string, else it returns the error(here it tries to match the error as defined in the generics, for example, for this case it's ParseError)
      */
     let request = str::from_utf8(buff)?; // converting the byte slice to a string
+
+    match get_next_word(request) {
+      Some((method, request)) => {}
+      None => return Err(ParseError::InvalidRequest),
+    }
+
     unimplemented!()
   }
 }
