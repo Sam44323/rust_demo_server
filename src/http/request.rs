@@ -39,6 +39,11 @@ impl ParseError {
   }
 }
 
+/**
+ * we are implementing Debug and Display traits for our ParseError type so
+ * that we can print the error message in a nice way and make the Error trait work
+ */
+
 // implementing the Display trait for the ParseError enum
 impl Display for ParseError {
   fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
