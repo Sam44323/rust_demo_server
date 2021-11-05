@@ -75,6 +75,13 @@ impl TryFrom<&[u8]> for Request {
 }
 
 // We are using Option because if the query string is empty, we return None
+// here we return the word and the rest string slice
 fn get_next_word(request: &str) -> Option<(&str, &str)> {
-  unimplemented!();
+  let mut iter = request.chars();
+  for (index, value) in iter.enumerate() {
+    if value == ' ' {
+      return Some((&request[..index], &request[index + 1..]));
+    }
+  }
+  None // returning None if the string is exhausted or empty
 }
