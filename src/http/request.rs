@@ -73,3 +73,8 @@ impl TryFrom<&[u8]> for Request {
     unimplemented!()
   }
 }
+
+// We are using Option because if the query string is empty, we return None
+fn get_next_word(request: &str) -> Option<(&str, &str)> {
+  unimplemented!();
+}
