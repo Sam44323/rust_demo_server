@@ -25,7 +25,7 @@ impl Server {
             Ok(_) => {
               println!("Received a request: {}", String::from_utf8_lossy(&buffer));
 
-              // adding a try_from implementation to our buffer
+              // trying to convert buffer to the request type
               match Request::try_from(&buffer as &[u8]) {
                 Ok(_) => println!("Request parsed successfully"),
                 Err(e) => println!("Request could not be parsed: {}", e),
