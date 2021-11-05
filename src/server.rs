@@ -27,7 +27,7 @@ impl Server {
 
               // adding a try_from implementation to our buffer
               match Request::try_from(&buffer as &[u8]) {
-                Ok(request) => println!("Request parsed successfully"),
+                Ok(_) => println!("Request parsed successfully"),
                 Err(e) => println!("Request could not be parsed: {}", e),
               }
             }
