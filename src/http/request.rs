@@ -53,4 +53,6 @@ impl Debug for ParseError {
     write!(f, "{}", self.message())
   }
 }
+
+// Adding custom Error implementation for the ParseError enum
 impl Error for ParseError {}
